@@ -76,18 +76,18 @@ export class PrizePool {
   @Column()
   treasury: string;
 
-  @Column(type => BonusConfig)
+  @Column((type) => BonusConfig)
   bonusConfig: BonusConfig;
 
-  @Column(type => EpochConfig)
+  @Column((type) => EpochConfig)
   epochConfig: EpochConfig;
 
-  @Column(type => ParticipationRules)
+  @Column((type) => ParticipationRules)
   participationRules: ParticipationRules;
 
   constructor(props: PrizePoolProps) {
     if (props.id !== undefined) {
-        this.id = props.id;
+      this.id = props.id;
     }
     this.owner = props.owner;
     this.vault = props.vault;

@@ -1,10 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEthereumAddress,
-  IsNumber,
-  IsPositive,
-  ValidateNested
-} from 'class-validator';
+import { IsEthereumAddress, IsNumber, IsPositive, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class BonusConfigDto {

@@ -1,14 +1,15 @@
 import 'dotenv/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { join } from 'path';
+import { throwMissingEnvError } from '../../utils/env';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: process.env.DATABASE_HOST,
-  port: parseInt(process.env.DATABASE_PORT),
-  username: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
+  host: throwMissingEnvError('DATABASE_HOST'),
+  port: parseInt(throwMissingEnvError('DATABASE_PORT')),
+  username: throwMissingEnvError('DATABASE_USER'),
+  password: throwMissingEnvError('DATABASE_PASSWORD'),
+  database: throwMissingEnvError('DATABASE_NAME'),
   entities: [join(__dirname, '../../modules/**/entities/*.entity.{js,ts}')],
   migrations: [join(__dirname, './migrations/*.{js,ts}')],
   synchronize: false,

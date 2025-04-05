@@ -1,3 +1,1 @@
-export interface IPrizePool {
-    
-}
+export interface IPrizePool {}
