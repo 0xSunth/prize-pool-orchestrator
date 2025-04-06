@@ -1,7 +1,11 @@
 import 'dotenv/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { join } from 'path';
-import { throwMissingEnvError } from '../../utils/env';
+import { dirname, join, resolve } from 'path';
+import { throwMissingEnvError } from '../../utils/env.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
@@ -10,8 +14,8 @@ export const dataSourceOptions: DataSourceOptions = {
   username: throwMissingEnvError('DATABASE_USER'),
   password: throwMissingEnvError('DATABASE_PASSWORD'),
   database: throwMissingEnvError('DATABASE_NAME'),
-  entities: [join(__dirname, '../../modules/**/entities/*.entity.{js,ts}')],
-  migrations: [join(__dirname, './migrations/*.{js,ts}')],
+  entities: [resolve(__dirname, '../../modules/**/entity/*.entity.js')],
+  migrations: [resolve(__dirname, '../../config/database/migrations/*.js')],
   synchronize: false,
   entitySkipConstructor: true,
   logging: false,
