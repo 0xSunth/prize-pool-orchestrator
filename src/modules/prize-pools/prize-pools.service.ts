@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePrizePoolDto } from './dto/create-prize-pool.dto';
-import { PrizePool } from './entity/prize-pool.entity';
+import { CreatePrizePoolDto } from './dto/create-prize-pool.dto.js';
+import { PrizePool } from './entity/prize-pool.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contract, JsonRpcProvider, Wallet } from 'ethers';
 import { ConfigService } from '@nestjs/config';
-import prizePoolFactoryAbi from '../../global/abis/prize-pool-factory.json';
-import { safeTx } from '../../utils/ethers';
+import prizePoolFactoryAbi from '../../global/abis/prize-pool-factory.json' with { type: 'json' };
+import { safeTx } from '../../utils/ethers.js';
 
 @Injectable()
 export class PrizePoolsService {

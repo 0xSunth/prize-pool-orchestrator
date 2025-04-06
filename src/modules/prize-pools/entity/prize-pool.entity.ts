@@ -1,52 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { CreatePrizePoolDto } from '../dto/create-prize-pool.dto';
-
-class BonusConfig {
-  @Column('bigint')
-  bonusPerEpoch: number;
-
-  @Column('bigint')
-  maxBonus: number;
-
-  @Column('bigint')
-  decayPerEpoch: number;
-
-  constructor(props: BonusConfig) {
-    this.bonusPerEpoch = props.bonusPerEpoch;
-    this.maxBonus = props.maxBonus;
-    this.decayPerEpoch = props.decayPerEpoch;
-  }
-}
-
-class EpochConfig {
-  @Column('bigint')
-  epochDuration: number;
-
-  @Column('bigint')
-  entryDeadline: number;
-
-  @Column('bigint')
-  maxParticipants: number;
-
-  constructor(props: EpochConfig) {
-    this.epochDuration = props.epochDuration;
-    this.entryDeadline = props.entryDeadline;
-    this.maxParticipants = props.maxParticipants;
-  }
-}
-
-class ParticipationRules {
-  @Column('bigint')
-  minDepositAmount: number;
-
-  @Column('bigint')
-  maxWithdrawFee: number;
-
-  constructor(props: ParticipationRules) {
-    this.minDepositAmount = props.minDepositAmount;
-    this.maxWithdrawFee = props.maxWithdrawFee;
-  }
-}
+import { CreatePrizePoolDto } from '../dto/create-prize-pool.dto.js';
 
 interface PrizePoolProps {
   id?: number;
@@ -54,9 +7,14 @@ interface PrizePoolProps {
   vault: string;
   feeRecipient: string;
   treasury: string;
-  bonusConfig: BonusConfig;
-  epochConfig: EpochConfig;
-  participationRules: ParticipationRules;
+  bonusPerEpoch: number;
+  maxBonus: number;
+  decayPerEpoch: number;
+  epochDuration: number;
+  entryDeadline: number;
+  maxParticipants: number;
+  minDepositAmount: number;
+  maxWithdrawFee: number;
 }
 
 @Entity('prize_pools')
@@ -76,48 +34,50 @@ export class PrizePool {
   @Column()
   treasury: string;
 
-  @Column((type) => BonusConfig)
-  bonusConfig: BonusConfig;
+  // Bonus config
+  @Column('bigint')
+  bonusPerEpoch!: number;
 
-  @Column((type) => EpochConfig)
-  epochConfig: EpochConfig;
+  @Column('bigint')
+  maxBonus!: number;
 
-  @Column((type) => ParticipationRules)
-  participationRules: ParticipationRules;
+  @Column('bigint')
+  decayPerEpoch!: number;
+
+  // Epoch config
+  @Column('bigint')
+  epochDuration!: number;
+
+  @Column('bigint')
+  entryDeadline!: number;
+
+  @Column('bigint')
+  maxParticipants!: number;
+
+  // Participation rules
+  @Column('bigint')
+  minDepositAmount!: number;
+
+  @Column('bigint')
+  maxWithdrawFee!: number;
 
   constructor(props: PrizePoolProps) {
-    if (props.id !== undefined) {
-      this.id = props.id;
-    }
+    if (props.id !== undefined) this.id = props.id;
     this.owner = props.owner;
     this.vault = props.vault;
     this.feeRecipient = props.feeRecipient;
     this.treasury = props.treasury;
-    this.bonusConfig = props.bonusConfig;
-    this.epochConfig = props.epochConfig;
-    this.participationRules = props.participationRules;
+    this.bonusPerEpoch = props.bonusPerEpoch;
+    this.maxBonus = props.maxBonus;
+    this.decayPerEpoch = props.decayPerEpoch;
+    this.epochDuration = props.epochDuration;
+    this.entryDeadline = props.entryDeadline;
+    this.maxParticipants = props.maxParticipants;
+    this.minDepositAmount = props.minDepositAmount;
+    this.maxWithdrawFee = props.maxWithdrawFee;
   }
 
   static fromDto(dto: CreatePrizePoolDto): PrizePool {
-    return new PrizePool({
-      owner: dto.owner,
-      vault: dto.vault,
-      feeRecipient: dto.feeRecipient,
-      treasury: dto.treasury,
-      bonusConfig: new BonusConfig({
-        bonusPerEpoch: dto.bonusConfig.bonusPerEpoch,
-        maxBonus: dto.bonusConfig.maxBonus,
-        decayPerEpoch: dto.bonusConfig.decayPerEpoch,
-      }),
-      epochConfig: new EpochConfig({
-        epochDuration: dto.epochConfig.epochDuration,
-        entryDeadline: dto.epochConfig.entryDeadline,
-        maxParticipants: dto.epochConfig.maxParticipants,
-      }),
-      participationRules: new ParticipationRules({
-        minDepositAmount: dto.participationRules.minDepositAmount,
-        maxWithdrawFee: dto.participationRules.maxWithdrawFee,
-      }),
-    });
+    return new PrizePool({ ...dto });
   }
 }

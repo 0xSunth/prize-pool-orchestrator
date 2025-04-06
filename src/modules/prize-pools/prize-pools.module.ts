@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PrizePool } from './entity/prize-pool.entity';
-import { PrizePoolsController } from './prize-pools.controller';
-import { PrizePoolsService } from './prize-pools.service';
+import { PrizePool } from './entity/prize-pool.entity.js';
+import { PrizePoolsController } from './prize-pools.controller.js';
+import { PrizePoolsService } from './prize-pools.service.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PrizePool])],

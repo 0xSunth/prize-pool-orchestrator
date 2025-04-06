@@ -8,9 +8,9 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { CreatePrizePoolDto } from './dto/create-prize-pool.dto';
-import { PrizePoolsService } from './prize-pools.service';
-import { PrizePool } from './entity/prize-pool.entity';
+import { CreatePrizePoolDto } from './dto/create-prize-pool.dto.js';
+import { PrizePoolsService } from './prize-pools.service.js';
+import { PrizePool } from './entity/prize-pool.entity.js';
 
 @ApiTags('PrizePools')
 @Controller('prize-pools')
