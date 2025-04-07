@@ -26,7 +26,7 @@ async function bootstrap() {
   });
   app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
   app.use((req: any, res: any, next: any) => {
-    console.log(`[REQ] ${req.method} ${req.url}`);
+    console.log(`[REQUEST] ${req.method} ${req.url}`);
     next();
   });
 

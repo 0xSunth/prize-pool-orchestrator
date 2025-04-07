@@ -25,6 +25,11 @@ export class PrizePoolsController {
   @ApiInternalServerErrorResponse({ description: 'Unexpected server error' })
   @ApiForbiddenResponse({ description: 'Unauthorized – you do not have the required permissions' })
   async createPrizePool(@Body() createPrizePoolDto: CreatePrizePoolDto): Promise<PrizePool> {
-    return this.prizePoolsService.create(createPrizePoolDto);
+    try {
+      return await this.prizePoolsService.create(createPrizePoolDto);
+    } catch (error) {
+      console.error('Error in createPrizePool:', error);
+      throw error;
+    }
   }
 }
