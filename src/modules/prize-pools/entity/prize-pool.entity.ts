@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { CreatePrizePoolDto } from '../dto/create-prize-pool.dto.js';
+import { Scheduler } from '../../schedulers/entity/scheduler.entity.js';
 
 interface PrizePoolProps {
   id?: number;
@@ -15,6 +16,7 @@ interface PrizePoolProps {
   maxParticipants: number;
   minDepositAmount: number;
   maxWithdrawFee: number;
+  scheduler?: Scheduler;
 }
 
 @Entity('prize_pools')
@@ -61,6 +63,9 @@ export class PrizePool {
   @Column('bigint')
   maxWithdrawFee!: number;
 
+  @OneToOne(() => Scheduler, (scheduler) => scheduler.prizePool, { cascade: true })
+  scheduler?: Relation<Scheduler>;
+
   constructor(props: PrizePoolProps) {
     if (props.id !== undefined) this.id = props.id;
     this.owner = props.owner;
@@ -75,6 +80,7 @@ export class PrizePool {
     this.maxParticipants = props.maxParticipants;
     this.minDepositAmount = props.minDepositAmount;
     this.maxWithdrawFee = props.maxWithdrawFee;
+    if (props.scheduler) this.scheduler = props.scheduler;
   }
 
   static fromDto(dto: CreatePrizePoolDto): PrizePool {

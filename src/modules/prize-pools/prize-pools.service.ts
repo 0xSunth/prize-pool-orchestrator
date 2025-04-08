@@ -3,12 +3,14 @@ import { CreatePrizePoolDto } from './dto/create-prize-pool.dto.js';
 import { PrizePool } from './entity/prize-pool.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Contract, ethers, JsonRpcProvider, Wallet } from 'ethers';
+import { Contract, ethers, JsonRpcProvider, toBeHex, Wallet } from 'ethers';
 import { ConfigService } from '@nestjs/config';
 import prizePoolFactoryAbi from '../../global/abis/prize-pool-factory.json' with { type: 'json' };
 import vaultAbi from '../../global/abis/vault.json' with { type: 'json' };
+import prizePoolAbi from '../../global/abis/prize-pool.json' with { type: 'json' };
 import { safeTx } from '../../utils/ethers.js';
 import { IPrizePool } from './interface/prize-pool.interface.js';
+import { Scheduler } from '../schedulers/entity/scheduler.entity.js';
 
 @Injectable()
 export class PrizePoolsService {
@@ -24,12 +26,29 @@ export class PrizePoolsService {
     this.signer = new Wallet(this.configService.get('wallet').privateKey, this.provider);
   }
 
-  async create(createPrizePoolDto: CreatePrizePoolDto): Promise<PrizePool> {
+  async create(createPrizePoolDto: CreatePrizePoolDto): Promise<{ prizePool: string }> {
     const prizePool = PrizePool.fromDto(createPrizePoolDto);
     const { id, address } = await this.deployPrizePoolContract(createPrizePoolDto);
     prizePool.id = id;
 
-    return this.prizePoolRepository.save(prizePool);
+    const { duration, startTime } = await this.getCurrentEpochInfo(address);
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    // console.log('nowInSeconds', nowInSeconds);
+    // console.log('duration', Number(duration));
+
+    const scheduler = new Scheduler({
+      prizePool,
+      lastExecution: undefined,
+      nextExecution: new Date((nowInSeconds + Number(duration)) * 1000),
+      status: 'idle',
+      retryAt: undefined,
+      notes: 'Waiting for the end of the first epoch',
+    });
+
+    prizePool.scheduler = scheduler;
+    await this.prizePoolRepository.save(prizePool);
+
+    return { prizePool: address };
   }
 
   async deployPrizePoolContract(createPrizePoolDto: CreatePrizePoolDto): Promise<{
@@ -95,12 +114,28 @@ export class PrizePoolsService {
     if (!prizePoolCreatedEvent) {
       throw new Error('PrizePoolCreated event not found.');
     }
-    console.log('Event Name:', prizePoolCreatedEvent.name);
-    console.log('Event Args:', prizePoolCreatedEvent.args);
+    // console.log('Event Name:', prizePoolCreatedEvent.name);
+    // console.log('Event Args:', prizePoolCreatedEvent.args);
+    const vault = prizePoolCreatedEvent.args[0];
+    const prizePool = prizePoolCreatedEvent.args[1];
 
     return {
       id: 0, // Get id by smart-contract
-      address: prizePoolCreatedEvent.args.toString(),
+      address: prizePool,
+    };
+  }
+
+  async getCurrentEpochInfo(
+    prizePoolAddress: string,
+  ): Promise<{ duration: number; startTime: number }> {
+    const prizePoolContract = new Contract(toBeHex(prizePoolAddress), prizePoolAbi, this.provider);
+    const currentEpoch = await prizePoolContract.getCurrentEpoch();
+    const epochDuration = await prizePoolContract.getEpochDuration();
+    const epochStartTime = await prizePoolContract.getEpochStartTime(currentEpoch);
+
+    return {
+      duration: epochDuration,
+      startTime: epochStartTime,
     };
   }
 }

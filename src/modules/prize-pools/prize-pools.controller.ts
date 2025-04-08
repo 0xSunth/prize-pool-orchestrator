@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -24,7 +24,9 @@ export class PrizePoolsController {
   @ApiUnprocessableEntityResponse({ description: 'Validation failed – check payload fields' })
   @ApiInternalServerErrorResponse({ description: 'Unexpected server error' })
   @ApiForbiddenResponse({ description: 'Unauthorized – you do not have the required permissions' })
-  async createPrizePool(@Body() createPrizePoolDto: CreatePrizePoolDto): Promise<PrizePool> {
+  async createPrizePool(
+    @Body() createPrizePoolDto: CreatePrizePoolDto,
+  ): Promise<{ prizePool: string }> {
     try {
       return await this.prizePoolsService.create(createPrizePoolDto);
     } catch (error) {
