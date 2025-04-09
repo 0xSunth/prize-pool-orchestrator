@@ -11,6 +11,7 @@ import prizePoolAbi from '../../global/abis/prize-pool.json' with { type: 'json'
 import { safeTx } from '../../utils/ethers.js';
 import { IPrizePool } from './interface/prize-pool.interface.js';
 import { Scheduler } from '../schedulers/entity/scheduler.entity.js';
+import { SchedulersService } from '../schedulers/schedulers.service.js';
 
 @Injectable()
 export class PrizePoolsService {
@@ -21,6 +22,7 @@ export class PrizePoolsService {
     @InjectRepository(PrizePool)
     private prizePoolRepository: Repository<PrizePool>,
     private configService: ConfigService,
+    private schedulersService: SchedulersService,
   ) {
     this.provider = new JsonRpcProvider(this.configService.get<string>('ethereum.sepolia.rpcUrl'));
     this.signer = new Wallet(this.configService.get('wallet').privateKey, this.provider);
@@ -30,11 +32,10 @@ export class PrizePoolsService {
     const prizePool = PrizePool.fromDto(createPrizePoolDto);
     const { id, address } = await this.deployPrizePoolContract(createPrizePoolDto);
     prizePool.id = id;
+    prizePool.address = address; 
 
     const { duration, startTime } = await this.getCurrentEpochInfo(address);
     const nowInSeconds = Math.floor(Date.now() / 1000);
-    // console.log('nowInSeconds', nowInSeconds);
-    // console.log('duration', Number(duration));
 
     const scheduler = new Scheduler({
       prizePool,
@@ -47,6 +48,8 @@ export class PrizePoolsService {
 
     prizePool.scheduler = scheduler;
     await this.prizePoolRepository.save(prizePool);
+
+    await this.schedulersService.reloadScheduler(scheduler.id);
 
     return { prizePool: address };
   }
@@ -114,8 +117,6 @@ export class PrizePoolsService {
     if (!prizePoolCreatedEvent) {
       throw new Error('PrizePoolCreated event not found.');
     }
-    // console.log('Event Name:', prizePoolCreatedEvent.name);
-    // console.log('Event Args:', prizePoolCreatedEvent.args);
     const vault = prizePoolCreatedEvent.args[0];
     const prizePool = prizePoolCreatedEvent.args[1];
 

@@ -5,6 +5,7 @@ import base from './config/base.config.js';
 import database from './config/database.config.js';
 import { DatabaseModule } from './config/database/database.module.js';
 import { PrizePoolsModule } from './modules/prize-pools/prize-pools.module.js';
+import { SchedulersModule } from './modules/schedulers/schedulers.module.js';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PrizePoolsModule } from './modules/prize-pools/prize-pools.module.js';
     }),
     DatabaseModule,
     PrizePoolsModule,
+    SchedulersModule,
   ],
   providers: [],
 })

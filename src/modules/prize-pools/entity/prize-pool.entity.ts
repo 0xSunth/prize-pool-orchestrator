@@ -4,6 +4,7 @@ import { Scheduler } from '../../schedulers/entity/scheduler.entity.js';
 
 interface PrizePoolProps {
   id?: number;
+  address?: string;
   owner: string;
   vault: string;
   feeRecipient: string;
@@ -23,6 +24,9 @@ interface PrizePoolProps {
 export class PrizePool {
   @PrimaryColumn()
   id!: number;
+
+  @Column()
+  address!: string;
 
   @Column()
   owner: string;
@@ -68,6 +72,7 @@ export class PrizePool {
 
   constructor(props: PrizePoolProps) {
     if (props.id !== undefined) this.id = props.id;
+    if (props.address) this.address = props.address;
     this.owner = props.owner;
     this.vault = props.vault;
     this.feeRecipient = props.feeRecipient;
