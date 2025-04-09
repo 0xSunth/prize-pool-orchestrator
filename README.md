@@ -10,7 +10,7 @@ docker-compose logs -f backend
 ## Access the backend container (shell)
 
 ```sh
-docker exec -it sotiras-backend sh
+docker exec -it helyx-backend sh
 ```
 
 ## Useful Database commands

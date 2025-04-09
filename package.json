@@ -1,7 +1,7 @@
 {
-  "name": "sotiras-backend",
+  "name": "helyx-backend",
   "version": "1.0.0",
-  "description": "Sotiras backend",
+  "description": "Helyx backend",
   "type": "module",
   "scripts": {
     "start": "node dist/main.js",

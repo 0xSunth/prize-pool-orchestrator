@@ -31,8 +31,8 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('Sotiras')
-    .setDescription('Official Sotiras API')
+    .setTitle('Helyx Finance')
+    .setDescription('Official Helyx Finance API')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
