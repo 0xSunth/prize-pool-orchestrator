@@ -1,9 +1,10 @@
 FROM node:20-alpine
-WORKDIR /app
 
+WORKDIR /app
 COPY package*.json ./
+
+RUN apk add --no-cache curl
 RUN npm install
 
 COPY . .
-
 CMD ["npm", "run", "start:dev"]

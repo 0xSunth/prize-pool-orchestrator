@@ -23,7 +23,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - app_network
+      - default
 
   postgres:
     image: postgres:16-alpine
@@ -40,11 +40,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - app_network
+      - default
 
 volumes:
   pgdata:
   helyx:
 
 networks:
-  app_network:
+  default:
+    external:
+      name: helyx-shared-network
