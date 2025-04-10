@@ -5,13 +5,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contract, ethers, JsonRpcProvider, toBeHex, Wallet } from 'ethers';
 import { ConfigService } from '@nestjs/config';
-import prizePoolFactoryAbi from '../../global/abis/prize-pool-factory.json' with { type: 'json' };
-import vaultAbi from '../../global/abis/vault.json' with { type: 'json' };
-import prizePoolAbi from '../../global/abis/prize-pool.json' with { type: 'json' };
+import { createRequire } from 'module';
 import { safeTx } from '../../utils/ethers.js';
 import { IPrizePool } from './interface/prize-pool.interface.js';
 import { Scheduler } from '../schedulers/entity/scheduler.entity.js';
 import { SchedulersService } from '../schedulers/schedulers.service.js';
+
+const require = createRequire(import.meta.url);
+
+const prizePoolFactoryAbi = require('../../global/abis/prize-pool-factory.json');
+const vaultAbi = require('../../global/abis/vault.json');
+const prizePoolAbi = require('../../global/abis/prize-pool.json');
 
 @Injectable()
 export class PrizePoolsService {
@@ -32,7 +36,7 @@ export class PrizePoolsService {
     const prizePool = PrizePool.fromDto(createPrizePoolDto);
     const { id, address } = await this.deployPrizePoolContract(createPrizePoolDto);
     prizePool.id = id;
-    prizePool.address = address; 
+    prizePool.address = address;
 
     const { duration, startTime } = await this.getCurrentEpochInfo(address);
     const nowInSeconds = Math.floor(Date.now() / 1000);
