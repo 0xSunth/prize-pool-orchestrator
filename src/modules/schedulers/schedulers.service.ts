@@ -4,6 +4,7 @@ import { Scheduler } from './entity/scheduler.entity.js';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { PrizePool } from '../prize-pools/entity/prize-pool.entity.js';
 
 @Injectable()
 export class SchedulersService implements OnModuleInit {
@@ -13,6 +14,8 @@ export class SchedulersService implements OnModuleInit {
   constructor(
     @InjectRepository(Scheduler)
     private readonly schedulerRepository: Repository<Scheduler>,
+    @InjectRepository(PrizePool)
+    private prizePoolRepository: Repository<PrizePool>,
     private configService: ConfigService,
   ) {}
 
@@ -90,18 +93,20 @@ export class SchedulersService implements OnModuleInit {
     }
   }
 
-  async schedulerExecuted(prizePoolId: number) {
-    const scheduler = await this.schedulerRepository.findOne({
-      where: { prizePool: { id: prizePoolId } },
+  async schedulerExecuted(prizePoolAddress: string) {
+    const prizePool = await this.prizePoolRepository.findOne({
+      where: { address: prizePoolAddress },
     });
+    if (!prizePool) return;
 
+    const scheduler = await this.schedulerRepository.findOne({
+      where: { prizePool: { id: prizePool.id } },
+    });
     if (!scheduler) return;
 
     const now = new Date();
     scheduler.lastExecution = now;
-    scheduler.nextExecution = new Date(
-      now.getTime() + Number(scheduler.prizePool.epochDuration) * 1000,
-    );
+    scheduler.nextExecution = new Date(now.getTime() + Number(prizePool.epochDuration) * 1000);
     scheduler.status = 'idle';
     scheduler.notes = 'Execution confirmed by Keeper';
     await this.schedulerRepository.save(scheduler);
