@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default () => ({
   port: parseInt(process.env.PORT || '3000', 10),
-  keeperApi: process.env.KEEPER_API,
+  keeperApi: process.env.KEEPER_API_URL,
   ethereum: {
     sepolia: {
       rpcUrl: process.env.RPC_URL,

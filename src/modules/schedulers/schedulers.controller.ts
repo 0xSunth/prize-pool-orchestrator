@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SchedulersService } from './schedulers.service.js';
 
 @Controller('schedulers')
@@ -14,17 +14,18 @@ export class SchedulersController {
     };
   }
 
-  @Post(':address/executed')
-  async confirmExecution(@Param('address') address: string) {
+  // Only callable by keeper
+  @Post('executed')
+  async confirmExecution(@Body('prizePoolAddress') prizePoolAddress: string) {
     try {
-      return await this.schedulersService.schedulerExecuted(address);
+      return await this.schedulersService.schedulerExecuted(prizePoolAddress);
     } catch (error) {
       console.error('Error in confirmExecution:', error);
       throw error;
     }
   }
 
-  // Juste pour test faut pas que j'oublie d'enlever
+  // In case of Emergency
   @Get('run/:id')
   async runSchedulerManually(@Param('id') id: number) {
     await this.schedulersService.runScheduler(id);

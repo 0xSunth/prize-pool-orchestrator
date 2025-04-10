@@ -104,6 +104,10 @@ export class SchedulersService implements OnModuleInit {
     });
     if (!scheduler) return;
 
+    if (scheduler.status !== 'running') {
+      throw new Error(`Scheduler for prize pool ${prizePoolAddress} is not running.`);
+    }
+
     const now = new Date();
     scheduler.lastExecution = now;
     scheduler.nextExecution = new Date(now.getTime() + Number(prizePool.epochDuration) * 1000);
