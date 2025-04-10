@@ -99,7 +99,9 @@ export class SchedulersService implements OnModuleInit {
 
     const now = new Date();
     scheduler.lastExecution = now;
-    scheduler.nextExecution = new Date(now.getTime() + Number(scheduler.prizePool.epochDuration));
+    scheduler.nextExecution = new Date(
+      now.getTime() + Number(scheduler.prizePool.epochDuration) * 1000,
+    );
     scheduler.status = 'idle';
     scheduler.notes = 'Execution confirmed by Keeper';
     await this.schedulerRepository.save(scheduler);
